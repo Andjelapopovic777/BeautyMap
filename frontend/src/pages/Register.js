@@ -1,0 +1,66 @@
+import React, { useState } from 'react';
+
+function Register() {
+  const [ime, setIme] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert(`Registracija pokušana za: ${email}.`);
+  };
+
+  return (
+    <div className="min-h-[85vh] flex items-center justify-center px-4">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100">
+        <h2 className="text-3xl font-black text-center text-gray-900 mb-2">Kreirajte nalog</h2>
+        <p className="text-center text-gray-500 mb-8 text-sm">Pridružite se BeautyMap zajednici</p>
+        
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Ime i prezime</label>
+            <input
+              type="text"
+              required
+              value={ime}
+              onChange={(e) => setIme(e.target.value)}
+              placeholder="Anđela Popović"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">E-mail adresa</label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="mail@gmail.com"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Lozinka</label>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full py-3 bg-pink-500 text-white font-bold rounded-xl hover:bg-pink-600 shadow-md transition-all"
+          >
+            Registruj se
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default Register;
