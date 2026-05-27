@@ -8,7 +8,7 @@ function Profil() {
   // Kompletan objekat sa podacima i uslugama koji se prikazuje na "stranici" salona
   const [salonData, setSalonData] = useState({
     imeSalona: 'Beauty Corner',
-    lokacija: 'Novo Naselje, Novi Sad',
+    lokacija: 'Telep, Novi Sad',
     radnoVreme: 'Pon - Pet: 09:00 - 20:00 | Sub: 09:00 - 17:00 | Ned: 10:00 - 15:00',
     opisSalona: 'Sve vrste frizerskih i kozmetičkih usluga na jednom mestu. Profesionalni tim stilista brine o Vašem izgledu.', // OVO SE SADA MENJA
     usluge: [

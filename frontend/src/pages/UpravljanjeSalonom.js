@@ -4,7 +4,7 @@ function UpravljanjeSalonom() {
   // Podaci o salonu koji se mogu menjati (CRUD - Update/Delete/Create za usluge)
   const [salon, setSalon] = useState({
     naziv: 'Beauty Corner',
-    lokacija: 'Novo Naselje, Novi Sad',
+    lokacija: 'Telep, Novi Sad',
     radnoVreme: 'Pon - Pet: 09:00 - 20:00 | Sub: 09:00 - 17:00 | Ned: 10:00 - 15:00',
     usluge: [
       { id: 1, naziv: 'Žensko šišanje', cena: '1.500' },
