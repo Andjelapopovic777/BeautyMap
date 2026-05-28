@@ -117,8 +117,8 @@ function Home() {
     <div className="max-w-7xl mx-auto px-4 py-0">
       {/* Hero sekcija */}
       <div className="flex flex-col items-center justify-center text-center mb-6">
-  <img 
-    src={makazeImg} 
+  <img  
+    src={makazeImg} alt="BeautyMap logo" 
     alt="BeautyMap logo" 
     className="w-full max-w-xs h-auto object-contain mb-2" 
   />

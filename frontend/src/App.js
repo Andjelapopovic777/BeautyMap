@@ -7,6 +7,9 @@ import AdminPanel from './pages/AdminPanel';
 import SalonDetalji from './pages/SalonDetalji';
 import Profil from './pages/Profil';
 
+// ISPRAVAN IMPORT SLIKE (Jedna tačkica jer je assets folder unutar istog src foldera)
+import makazeImg from './assets/makaze.jpg';
+
 function App() {
   // Simulacija uloge korisnika: 'gost', 'korisnik' ili 'admin'
   const [userRole, setUserRole] = useState('gost');
@@ -22,7 +25,7 @@ function App() {
             {/* Logo i Skretnica za simulaciju uloga */}
             <div className="flex items-center space-x-4">
               <Link to="/" className="text-2xl font-black text-pink-500 tracking-tight flex items-center gap-2">
-                 <span>BeautyMap</span>
+                  <span>BeautyMap</span>
               </Link>
               
               {/* MALI SELEKTOR ZA TESTIRANJE PROJETA (OVO ĆE ODUŠEVITI PRORESORE!) */}
