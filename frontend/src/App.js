@@ -28,7 +28,7 @@ function App() {
                   <span>BeautyMap</span>
               </Link>
               
-              {/* MALI SELEKTOR ZA TESTIRANJE PROJETA (OVO ĆE ODUŠEVITI PRORESORE!) */}
+              {/* MALI SELEKTOR ZA TESTIRANJE PROJETA */}
               <select 
                 value={userRole} 
                 onChange={(e) => setUserRole(e.target.value)}
