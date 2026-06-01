@@ -1,12 +1,10 @@
 const express = require('express');
 const router = express.Router();
 // Uvozimo obe funkcije iz kontrolera
-const { registerUser, loginUser } = require('../controllers/authController');
+const { registerUser, loginUser } = require('../controllers/authController'); 
 
-// Ruta za registraciju
+// Definišemo rute
 router.post('/register', registerUser);
-
-// Ruta za login
 router.post('/login', loginUser);
 
 module.exports = router;

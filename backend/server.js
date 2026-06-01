@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const connectDB = require('./config/db');
+const salonRoutes = require('./routes/salonRoutes');
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 
 // Rute
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/salons', salonRoutes);
 
 // Osnovna ruta
 app.get('/', (req, res) => {
