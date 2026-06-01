@@ -20,7 +20,7 @@ function Login() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">E-mail adresa</label>
             <input
               type="email"
-              required // trazi da se popuni polje u suprotnom izlazi baloncic sa obavestenjem
+              required 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="mail@gmail.com"

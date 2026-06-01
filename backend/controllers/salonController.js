@@ -71,3 +71,44 @@ exports.reviewSalon = async (req, res) => {
     res.status(500).json({ success: false, message: 'Greška na serveru', error: error.message });
   }
 };
+
+// 5. Vlasnik salona: Dodavanje nove usluge u cenovnik salona
+exports.addSalonService = async (req, res) => {
+  try {
+    const { name, price } = req.body;
+
+    // 1. Pronađi salon po ID-ju iz adrese (URL-a)
+    const salon = await Salon.findById(req.params.id);
+
+    if (!salon) {
+      return res.status(404).json({ success: false, message: 'Salon nije pronađen' });
+    }
+
+    // 2. Bezbednosna provera: Samo pravi vlasnik salona sme da doda uslugu
+    if (salon.owner.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Nemate dozvolu da menjate cenovnik ovog salona' 
+      });
+    }
+
+    // 3. Provera da li su polja popunjena
+    if (!name || !price) {
+      return res.status(400).json({ success: false, message: 'Molimo unesite naziv i cenu usluge' });
+    }
+
+    // 4. Gurni novu uslugu u niz 'services'
+    salon.services.push({ name, price });
+
+    // 5. Sačuvaj izmene u MongoDB bazi podataka
+    await salon.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Usluga je uspešno dodata u cenovnik!',
+      data: salon.services
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Greška na serveru', error: error.message });
+  }
+};
