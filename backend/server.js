@@ -1,16 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const connectDB = require('./config/db'); // 1. Uvozimo funkciju za povezivanje
+const connectDB = require('./config/db');
 
 const app = express();
 
 // Povezivanje sa bazom podataka
-connectDB(); // 2. Pokrećemo povezivanje sa MongoDB
+connectDB();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Rute
+app.use('/api/auth', require('./routes/authRoutes'));
 
 // Osnovna ruta
 app.get('/', (req, res) => {
