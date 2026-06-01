@@ -35,3 +35,7 @@ coverage/
 .DS_Store
 .cache/
 .tmp/
+
+
+*postman*
+*.json
