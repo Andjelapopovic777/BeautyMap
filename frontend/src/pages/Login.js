@@ -6,7 +6,7 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert(`Prijava pokušana za: ${email}. (U KT3 ovde povezujemo backend API!)`);
+    alert(`Prijava pokušana za: ${email}. (U KT3 ovde povezujem backend)`);
   };
 
   return (
@@ -20,7 +20,7 @@ function Login() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">E-mail adresa</label>
             <input
               type="email"
-              required
+              required // trazi da se popuni polje u suprotnom izlazi baloncic sa obavestenjem
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="mail@gmail.com"

@@ -47,7 +47,7 @@ function Profil() {
       setSalonData({ ...salonData, usluge: salonData.usluge.filter(u => u.id !== id) });
     }
   };
-
+ //forma za registraciju novog salona
   if (prikaziFormu) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8">

@@ -360,7 +360,7 @@ function SalonDetalji({ userRole }) {
         </div>
       )}
 
-      {/* --- UBACEN MODAL ZA ZAKAZIVANJE NA KRAJ STRANICE --- */}
+      {/* --- UBACEN MODAL ZA ZAKAZIVANJE NA KRAJ STRANICE komponenta --- */} 
       <ModalZaZakazivanje 
         isOpen={isFormaOpen} 
         onClose={() => setIsFormaOpen(false)} 
