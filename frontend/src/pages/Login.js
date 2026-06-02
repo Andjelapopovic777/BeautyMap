@@ -1,29 +1,57 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Prijava pokušana za: ${email}. (U KT3 ovde povezujem backend)`);
+    setError('');
+
+    try {
+      const res = await axios.post('http://localhost:5000/api/auth/login', {
+        email,
+        password
+      });
+
+      console.log("Uspeh:", res.data);
+      
+      // Čuvanje podataka u browseru
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('role', res.data.role);
+
+      alert('Uspešna prijava!');
+
+      // Pametno preusmeravanje na osnovu uloge
+      if (res.data.role === 'admin') {
+        window.location.href = '/';
+      } else {
+        window.location.href = '/';
+      }
+      
+    } catch (err) {
+      console.error("Greška:", err);
+      setError(err.response?.data?.message || 'Greška pri prijavi. Proverite podatke.');
+    }
   };
 
   return (
     <div className="min-h-[85vh] flex items-center justify-center px-4">
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100">
         <h2 className="text-3xl font-black text-center text-gray-900 mb-2">Dobrodošli nazad</h2>
-        <p className="text-center text-gray-500 mb-8 text-sm">Unesite podatke da biste pristupili profilu</p>
         
+        {error && <p className="text-red-500 text-sm text-center mb-4 font-bold">{error}</p>}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">E-mail adresa</label>
             <input
               type="email"
-              required 
+              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="mail@gmail.com"
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
             />
           </div>
@@ -35,7 +63,6 @@ function Login() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
             />
           </div>
@@ -47,10 +74,6 @@ function Login() {
             Prijavi se
           </button>
         </form>
-
-        <p className="text-center text-sm text-gray-600 mt-6">
-          Nemate nalog? <span className="text-pink-500 font-semibold cursor-pointer hover:underline">Registrujte se</span>
-        </p>
       </div>
     </div>
   );

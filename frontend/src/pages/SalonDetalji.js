@@ -195,7 +195,11 @@ function SalonDetalji({ userRole }) {
 
   // Zajednička provera za akcije (Zakazivanje i Recenzije)
   const proveriAkciju = (tipAkcije) => {
-    if (userRole === 'gost') {
+    // Proveravamo da li postoji token u localStorage
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      // Ako nema tokena, korisnik nije ulogovan
       if (tipAkcije === 'zakazi') {
         setPorukaModala('Morate biti prijavljeni da biste zakazali termin.');
       } else {
@@ -203,8 +207,9 @@ function SalonDetalji({ userRole }) {
       }
       setPrikažiModal(true);
     } else {
+      // Ako ima tokena, korisnik je ulogovan
       if (tipAkcije === 'zakazi') {
-        setIsFormaOpen(true); // <-- Otvara formu umesto starog alert-a!
+        setIsFormaOpen(true);
       }
     }
   };
@@ -275,60 +280,38 @@ function SalonDetalji({ userRole }) {
             
            
             <div className="space-y-4 max-h-60 overflow-y-auto mb-4 pr-2">
-              {lokalneRecenzije.length === 0 ? (
-                <p className="text-sm text-gray-500 italic">Ovaj salon još uvek nema recenzija. Budite prvi!</p>
-              ) : (
-                <p>Nema recenzija</p> && lokalneRecenzije.map((rec, index) => (
-                  <div key={index} className="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-xs font-bold text-gray-800">{rec.autor}</span>
-                      <span className="text-xs text-yellow-500">{'⭐'.repeat(rec.ocena)}</span>
-                    </div>
-                    <p className="text-xs text-gray-600">{rec.komentar}</p>
-                  </div>
-                ))
-              )}
+             {lokalneRecenzije.length === 0 ? (
+    <p className="text-sm text-gray-500 italic">
+      Ovaj salon još uvek nema recenzija. Budite prvi!
+    </p>
+  ) : (
+    lokalneRecenzije.map((rec, index) => (
+      <div key={index} className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+        <div className="flex justify-between items-center mb-1">
+          <span className="text-xs font-bold text-gray-800">{rec.autor}</span>
+          <span className="text-xs text-yellow-500">{'⭐'.repeat(rec.ocena)}</span>
+        </div>
+        <p className="text-xs text-gray-600">{rec.komentar}</p>
+      </div>
+    ))
+  )}
             </div>
           </div>
 
-          {userRole !== 'gost' ? (
-            <form onSubmit={handleDodajRecenziju} className="border-t border-gray-100 pt-4 mt-auto">
-              <p className="text-sm font-bold text-gray-800 mb-2">Ostavite Vašu recenziju:</p>
-              <div className="flex gap-2 mb-2">
-                <select 
-                  value={novaOcena} 
-                  onChange={(e) => setNovaOcena(e.target.value)}
-                  className="bg-gray-100 text-sm p-1.5 rounded-lg border focus:outline-none focus:ring-1 focus:ring-pink-500"
-                >
-                  <option value="5">⭐⭐⭐⭐⭐ (5)</option>
-                  <option value="4">⭐⭐⭐⭐ (4)</option>
-                  <option value="3">⭐⭐⭐ (3)</option>
-                  <option value="2">⭐⭐ (2)</option>
-                  <option value="1">⭐ (1)</option>
-                </select>
-              </div>
-              <textarea
-                rows="2"
-                value={novaRecenzijaTekst}
-                onChange={(e) => setNovaRecenzijaTekst(e.target.value)}
-                placeholder="Napišite utiske..."
-                className="w-full text-sm p-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none mb-2"
-                required
-              ></textarea>
-              <button type="submit" className="w-full bg-gray-950 text-white font-bold py-2 rounded-xl text-xs hover:bg-pink-600 transition">
-                Objavi komentar
-              </button>
-            </form>
-          ) : (
-            <div className="border-t border-gray-100 pt-4 mt-auto">
-              <button 
-                onClick={() => proveriAkciju('recenzija')}
-                className="w-full bg-gray-100 text-gray-700 font-bold py-2.5 rounded-xl text-sm hover:bg-gray-200 transition"
-              >
-                Ostavite Vašu recenziju
-              </button>
-            </div>
-          )}
+         {!!localStorage.getItem('token') ? (
+  <form onSubmit={handleDodajRecenziju} className="border-t border-gray-100 pt-4 mt-auto">
+    {/* ... tvoja postojeća forma ... */}
+  </form>
+) : (
+  <div className="border-t border-gray-100 pt-4 mt-auto">
+    <button 
+      onClick={() => proveriAkciju('recenzija')}
+      className="w-full bg-gray-100 text-gray-700 font-bold py-2.5 rounded-xl text-sm hover:bg-gray-200 transition"
+    >
+      Ostavite Vašu recenziju
+    </button>
+  </div>
+)}
         </div>
       </div>
 
