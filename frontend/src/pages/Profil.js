@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import api from '../api';
 
 function Profil() {
   const [prikaziFormu, setPrikaziFormu] = useState(false);
@@ -19,6 +21,48 @@ function Profil() {
   });
 
   const [novaUsluga, setNovaUsluga] = useState({ naziv: '', cena: '' });
+
+  // 1. DETEKTIV: Proverava status u bazi čim se stranica otvori
+  useEffect(() => {
+   const token = localStorage.getItem('token');
+  if (!token) return;
+
+  api.get('/api/saloni/moj-salon', {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+    .then(res => {
+      // Ako salon postoji, postavi podatke i status
+      setSalonData(res.data);
+      setStatusSalona(res.data.status === 'pending' ? 'na_cekanju' : 'odobren');
+    })
+    .catch((err) => {
+      // AKO SALON NE POSTOJI (npr. backend vrati 404), postavi status na 'nema'
+      console.log("Salon nije pronađen, prikazujem formu za registraciju.");
+      setStatusSalona('nema');
+    });
+}, []);
+
+  // 2. POŠTAR: Šalje podatke u bazu kada popuniš formu
+  const handleRegistracija = async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+  const data = Object.fromEntries(formData.entries()); 
+
+  try {
+    const token = localStorage.getItem('token');
+    await axios.post('http://localhost:5000/api/saloni', data, {
+      headers: { 
+        Authorization: `Bearer ${token}` 
+      }
+    });
+    alert("Zahtev uspešno poslat!");
+    setPrikaziFormu(false);
+  } catch (err) {
+    console.error(err);
+    alert("Došlo je do greške!");
+  }
+};
 
   const handleSalonChange = (e) => {
     setSalonData({ ...salonData, [e.target.name]: e.target.value });
@@ -54,30 +98,30 @@ function Profil() {
         <button onClick={() => setPrikaziFormu(false)} className="text-gray-500 hover:text-pink-500 mb-4 transition flex items-center gap-2">← Nazad</button>
         <div className="bg-white p-8 rounded-3xl shadow-md border border-gray-100">
           <h2 className="text-2xl font-black text-gray-900 mb-6">Registrujte svoj salon</h2>
-          <form onSubmit={(e) => { e.preventDefault(); setStatusSalona('na_cekanju'); setPrikaziFormu(false); }} className="space-y-4">
+<form onSubmit={handleRegistracija} className="space-y-4">
             
             {/* Ime salona */}
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">Ime salona</label>
-              <input type="text" required className="w-full px-4 py-3 rounded-xl border border-gray-200" placeholder="npr. Beauty Corner" />
+              <input name="imeSalona" type="text" required className="w-full px-4 py-3 rounded-xl border border-gray-200" placeholder="npr. Beauty Corner" />
             </div>
 
             {/* Ime vlasnika */}
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">Ime vlasnika</label>
-              <input type="text" required className="w-full px-4 py-3 rounded-xl border border-gray-200" placeholder="npr. Milica Jovanović" />
+              <input name="imeVlasnika" type="text" required className="w-full px-4 py-3 rounded-xl border border-gray-200" placeholder="npr. Milica Jovanović" />
             </div>
 
             {/* Lokacija salona */}
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">Lokacija salona</label>
-              <input type="text" required className="w-full px-4 py-3 rounded-xl border border-gray-200" placeholder="npr. Petrovaradin, Novi Sad" />
+              <input name="lokacija" type="text" required className="w-full px-4 py-3 rounded-xl border border-gray-200" placeholder="npr. Petrovaradin, Novi Sad" />
             </div>
 
             {/* Broj telefona */}
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">Broj telefona</label>
-              <input type="text" required className="w-full px-4 py-3 rounded-xl border border-gray-200" placeholder="npr. 0641234567" />
+              <input name="telefon" type="text" required className="w-full px-4 py-3 rounded-xl border border-gray-200" placeholder="npr. 0641234567" />
             </div>
 
             <button type="submit" className="w-full bg-pink-500 text-white font-bold py-3 rounded-xl hover:bg-pink-600 transition">Pošalji zahtev</button>

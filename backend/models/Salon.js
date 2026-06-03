@@ -16,22 +16,26 @@ const SalonSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Molimo unesite adresu salona']
   },
+  // OVO VIŠE NIJE OBAVEZNO (required: false)
   description: {
     type: String,
-    required: [true, 'Molimo unesite opis salona']
+    required: false 
   },
+  // OVO VIŠE NIJE OBAVEZNO (uklonjen enum da ne blokira slanje)
   serviceType: {
     type: String,
-    required: [true, 'Molimo unesite tip usluge'],
-    enum: ['frizerski', 'kozmeticki', 'masaza', 'nokti', 'drugo']
+    required: false
   },
-  // Radno vreme tačno po komponentama sa fronta
+  // Dodala sam telefon koji ti treba u formi
+  phone: {
+    type: String,
+    required: [true, 'Molimo unesite broj telefona']
+  },
   workingHours: {
     monFri: { type: String, default: '09:00 - 20:00' },
     sat: { type: String, default: '09:00 - 17:00' },
     sun: { type: String, default: '10:00 - 15:00' }
   },
-  // Niz usluga za cenovnik
   services: [ServiceSchema],
   
   status: {

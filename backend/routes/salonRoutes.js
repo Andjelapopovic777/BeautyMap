@@ -1,29 +1,21 @@
 const express = require('express');
 const router = express.Router();
-
-// Svi uvozi iz kontrolera spojeni u jedan blok - bez dupliranja!
 const { 
   createSalon, 
   getApprovedSalons, 
   getPendingSalons, 
   reviewSalon, 
-  addSalonService 
+  getMySalon 
 } = require('../controllers/salonController');
-
-// Uvozimo zaštitne middleware-e
 const { protect, authorize } = require('../middleware/authMiddleware');
 
-// Javna ruta: Svi mogu da vide odobrene salone na početnoj stranici
-router.get('/', getApprovedSalons);
-
-// Ruta za vlasnike: Samo ulogovani korisnik sa ulogom 'owner' može poslati zahtev
-router.post('/', protect, authorize('owner'), createSalon);
-
-// Rute za administratore: Samo korisnik sa ulogom 'admin' ima pristup ovome
+// OVE DVE LINIJE MORAJU BITI TU:
 router.get('/pending', protect, authorize('admin'), getPendingSalons);
-router.put('/:id/review', protect, authorize('admin'), reviewSalon);
+router.get('/approved', protect, authorize('admin'), getApprovedSalons);
 
-// Ruta za dodavanje usluga: Samo ulogovani vlasnik salona sme da je pozove
-router.post('/:id/services', protect, authorize('owner'), addSalonService);
+router.get('/', getApprovedSalons);
+router.get('/moj-salon', protect, authorize('owner'), getMySalon);
+router.post('/', protect, authorize('owner'), createSalon);
+router.put('/:id/review', protect, authorize('admin'), reviewSalon);
 
 module.exports = router;

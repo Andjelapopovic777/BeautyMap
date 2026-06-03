@@ -2,20 +2,24 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const connectDB = require('./config/db');
-const salonRoutes = require('./routes/salonRoutes');
 
+// 1. PRVO kreiraj app
 const app = express();
+
+// 2. ONDA koristi middleware (json i cors)
+app.use(cors());
+app.use(express.json());
+
+// 3. TEK SADA uvozi i koristi rute
+const salonRoutes = require('./routes/salonRoutes'); 
+console.log("Salon rute su učitane!");
 
 // Povezivanje sa bazom podataka
 connectDB();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-
 // Rute
 app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/salons', salonRoutes);
+app.use('/api/saloni', salonRoutes); // Ovde su tvoje rute
 
 // Osnovna ruta
 app.get('/', (req, res) => {
