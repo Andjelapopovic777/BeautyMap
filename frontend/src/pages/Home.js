@@ -29,7 +29,7 @@ function Home() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* HERO */}
+     
       <div className="flex flex-col items-center text-center mb-12">
         <img
           src={makazeImg}
@@ -46,7 +46,6 @@ function Home() {
         </p>
       </div>
 
-      {/* SEARCH */}
       <div className="max-w-xl mx-auto mb-12">
         <input
           type="text"
@@ -57,7 +56,6 @@ function Home() {
         />
       </div>
 
-      {/* LOADING */}
       {loading ? (
         <div className="text-center text-lg font-medium">
           Učitavanje salona...
@@ -74,13 +72,11 @@ function Home() {
                 key={salon._id}
                 className="group bg-white rounded-3xl border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
               >
-                {/* HEADER */}
                 <div className="h-32 bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600 relative">
                   <div className="absolute inset-0 flex items-center justify-center">
                   </div>
                 </div>
 
-                {/* BODY */}
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="text-2xl font-bold text-gray-900">
@@ -102,7 +98,6 @@ function Home() {
                     </p>
                   </div>
 
-                  {/* WORKING HOURS */}
                   <div className="mt-5 bg-gray-50 rounded-2xl p-4">
                     <h4 className="font-semibold text-gray-800 mb-2">
                       Radno vreme
@@ -115,7 +110,6 @@ function Home() {
                     </div>
                   </div>
 
-                  {/* BUTTON */}
                   <Link
                     to={`/salon/${salon._id}`}
                     className="mt-6 block w-full text-center bg-gray-900 hover:bg-black text-white font-semibold py-3 rounded-2xl transition"
