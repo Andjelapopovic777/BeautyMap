@@ -47,3 +47,39 @@ exports.getMySalon = async (req, res) => {
     res.status(500).json({ message: 'Greška' });
   }
 };
+
+exports.deleteSalon = async (req, res) => {
+  try {
+    const salon = await Salon.findById(req.params.id);
+
+    if (!salon) {
+      return res.status(404).json({
+        success: false,
+        message: 'Salon nije pronađen'
+      });
+    }
+
+    await Salon.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Salon uspešno obrisan'
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+exports.getSalonById = async (req, res) => {
+  try {
+    const salon = await Salon.findById(req.params.id);
+    if (!salon) return res.status(404).json({ success: false, message: 'Salon nije pronađen' });
+    res.status(200).json({ success: true, data: salon });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Greška na serveru', error: error.message });
+  }
+};

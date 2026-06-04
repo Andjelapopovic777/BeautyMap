@@ -18,9 +18,18 @@ function Login() {
 
       console.log("Uspeh:", res.data);
       
-      // Čuvanje podataka u browseru
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('role', res.data.role);
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('role', res.data.role);
+
+        localStorage.setItem(
+          'user',
+          JSON.stringify({
+            id: res.data._id,
+            name: res.data.name,
+            email: res.data.email,
+            role: res.data.role
+          })
+        );
 
       alert('Uspešna prijava!');
 

@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import api from '../api';
 
+
 function Profil() {
   const [prikaziFormu, setPrikaziFormu] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [statusSalona, setStatusSalona] = useState('odobren'); 
+  const [user, setUser] = useState(null);
+  
 
   // Kompletan objekat sa podacima i uslugama koji se prikazuje na "stranici" salona
   const [salonData, setSalonData] = useState({
@@ -32,7 +35,10 @@ function Profil() {
   })
     .then(res => {
       // Ako salon postoji, postavi podatke i status
-      setSalonData(res.data);
+      setSalonData({
+        ...res.data,
+        usluge: res.data.usluge || []
+      });
       setStatusSalona(res.data.status === 'pending' ? 'na_cekanju' : 'odobren');
     })
     .catch((err) => {
@@ -41,6 +47,14 @@ function Profil() {
       setStatusSalona('nema');
     });
 }, []);
+
+    useEffect(() => {
+      const userData = localStorage.getItem('user');
+
+      if (userData) {
+        setUser(JSON.parse(userData));
+      }
+    }, []);
 
   // 2. POŠTAR: Šalje podatke u bazu kada popuniš formu
   const handleRegistracija = async (e) => {
@@ -69,28 +83,81 @@ function Profil() {
   };
 
   const handleCenaChange = (id, novaCena) => {
-    const izmenjene = salonData.usluge.map(u => u.id === id ? { ...u, cena: novaCena } : u);
+    const izmenjene = salonData.services.map(u => u.id === id ? { ...u, cena: novaCena } : u);
     setSalonData({ ...salonData, usluge: izmenjene });
   };
 
   const handleNazivUslugeChange = (id, noviNaziv) => {
-    const izmenjene = salonData.usluge.map(u => u.id === id ? { ...u, naziv: noviNaziv } : u);
+    const izmenjene = salonData.services.map(u => u.id === id ? { ...u, naziv: noviNaziv } : u);
     setSalonData({ ...salonData, usluge: izmenjene });
   };
 
-  const handleDodajUslugu = (e) => {
-    e.preventDefault();
-    if (!novaUsluga.naziv || !novaUsluga.cena) return;
-    const nova = { id: Date.now(), naziv: novaUsluga.naziv, cena: novaUsluga.cena };
-    setSalonData({ ...salonData, usluge: [...salonData.usluge, nova] });
-    setNovaUsluga({ naziv: '', cena: '' });
-  };
+ const handleDodajUslugu = async (e) => {
+  e.preventDefault();
 
+  if (!novaUsluga.naziv || !novaUsluga.cena) return;
+
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await api.post(
+      `/api/saloni/${salonData._id}/usluge`,
+      {
+        naziv: novaUsluga.naziv,
+        cena: novaUsluga.cena
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    // backend vraća update-ovan salon
+    setSalonData(res.data);
+
+    setNovaUsluga({ naziv: "", cena: "" });
+
+  } catch (err) {
+    console.error(err);
+    alert("Greška pri dodavanju usluge");
+  }
+};
   const handleObrisiUslugu = (id) => {
     if (window.confirm("Obriši ovu uslugu?")) {
-      setSalonData({ ...salonData, usluge: salonData.usluge.filter(u => u.id !== id) });
+      setSalonData({ ...salonData, usluge: salonData.services.filter(u => u.id !== id) });
     }
   };
+  const handleDeleteSalon = async () => {
+  const potvrda = window.confirm(
+    "Da li sigurno želiš da obrišeš salon?"
+  );
+
+  if (!potvrda) return;
+
+  try {
+    const token = localStorage.getItem("token");
+
+    await api.delete(
+      `/api/saloni/moj-salon/${salonData._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    alert("Salon uspešno obrisan.");
+
+    setSalonData({});
+    setStatusSalona("nema");
+
+  } catch (err) {
+    console.error(err);
+    alert("Greška prilikom brisanja salona.");
+  }
+};
+
  //forma za registraciju novog salona
   if (prikaziFormu) {
     return (
@@ -151,7 +218,7 @@ function Profil() {
             <input 
               type="text" 
               name="imeSalona" 
-              value={salonData.imeSalona} 
+              value={salonData.name} 
               onChange={handleSalonChange}
               className="text-4xl font-extrabold text-gray-950 bg-transparent border-b-2 border-dashed border-gray-200 focus:border-pink-500 focus:outline-none w-full pb-1"
             />
@@ -165,7 +232,7 @@ function Profil() {
               <input 
                 type="text" 
                 name="lokacija" 
-                value={salonData.lokacija} 
+                value={salonData.address} 
                 onChange={handleSalonChange}
                 className="text-base font-bold text-pink-600 bg-transparent border-b border-dashed border-gray-200 focus:border-pink-500 focus:outline-none w-full"
               />
@@ -189,7 +256,7 @@ function Profil() {
             <label className="text-xs font-bold text-gray-400 block uppercase ml-1 mb-1">Opis salona</label>
             <textarea 
               name="opisSalona"
-              value={salonData.opisSalona} 
+              value={salonData.description} 
               onChange={handleSalonChange}
               rows="2"
               className="w-full bg-white p-3 rounded-xl border border-gray-100 shadow-sm text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
@@ -203,7 +270,7 @@ function Profil() {
               <h2 className="text-2xl font-black mb-6 text-gray-900">Usluge i cenovnik</h2>
               
               <div className="space-y-4 mb-6">
-                {salonData.usluge.map((usluga) => (
+                {salonData.services.map((usluga) => (
                   <div key={usluga.id} className="flex justify-between items-center border-b border-gray-50 pb-3">
                     <input 
                       type="text"
@@ -284,9 +351,15 @@ function Profil() {
       <div className="grid md:grid-cols-2 gap-8">
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
           <h2 className="text-xl font-bold mb-4 text-gray-800">Lični podaci</h2>
-          <p className="text-gray-600 mb-2"><strong>Ime:</strong> Anđela Popović</p>
-          <p className="text-gray-600 mb-4"><strong>E-mail:</strong> mail@gmail.com</p>
-          <span className="bg-green-100 text-green-700 font-bold px-3 py-1 rounded-full text-sm">Status: Registrovan Korisnik</span>
+        <p className="text-gray-600 mb-2">
+          <strong>Ime:</strong> {user?.name}
+        </p>
+
+        <p className="text-gray-600 mb-4">
+          <strong>E-mail:</strong> {user?.email}
+        </p>
+
+          
         </div>
 
         {statusSalona === 'nema' && (
@@ -317,9 +390,13 @@ function Profil() {
                 <span className="bg-blue-100 text-blue-700 font-bold px-2.5 py-0.5 rounded-full text-xs uppercase">Aktivan</span>
               </div>
               <div className="space-y-1.5 text-sm text-gray-600 mb-6">
-                <p><strong>Naziv:</strong> {salonData.imeSalona}</p>
-                <p><strong>Lokacija:</strong> {salonData.lokacija}</p>
-                <p className="text-xs text-gray-400 truncate"><strong>Radno vreme:</strong> {salonData.radnoVreme}</p>
+                <p>
+                  <strong>Naziv:</strong> {salonData?.name || 'Nije uneto'}
+                </p>
+
+                <p>
+                  <strong>Lokacija:</strong> {salonData?.address || 'Nije uneto'}
+                </p>
               </div>
             </div>
             
@@ -330,7 +407,10 @@ function Profil() {
               >
                 Izmeni podatke (Update)
               </button>
-              <button onClick={() => { if(window.confirm("Obriši salon?")) setStatusSalona('nema'); }} className="px-3 bg-red-50 text-red-600 font-bold rounded-xl hover:bg-red-100 transition text-sm border border-red-100">
+              <button
+                onClick={handleDeleteSalon}
+                className="px-3 bg-red-50 text-red-600 font-bold rounded-xl hover:bg-red-100 transition text-sm border border-red-100"
+              >
                 Obriši salon
               </button>
             </div>

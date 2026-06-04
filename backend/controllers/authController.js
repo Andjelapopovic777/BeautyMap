@@ -23,7 +23,7 @@ exports.registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: role || 'client', // Ako nije poslata uloga, podrazumeva se klijent
+      role: role || 'owner',
       phoneNumber
     });
 
