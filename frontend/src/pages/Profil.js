@@ -83,49 +83,26 @@ function Profil() {
   };
 
   const handleCenaChange = (id, novaCena) => {
-    const izmenjene = salonData.services.map(u => u.id === id ? { ...u, cena: novaCena } : u);
+    const izmenjene = salonData.usluge.map(u => u.id === id ? { ...u, cena: novaCena } : u);
     setSalonData({ ...salonData, usluge: izmenjene });
   };
 
   const handleNazivUslugeChange = (id, noviNaziv) => {
-    const izmenjene = salonData.services.map(u => u.id === id ? { ...u, naziv: noviNaziv } : u);
+    const izmenjene = salonData.usluge.map(u => u.id === id ? { ...u, naziv: noviNaziv } : u);
     setSalonData({ ...salonData, usluge: izmenjene });
   };
 
- const handleDodajUslugu = async (e) => {
-  e.preventDefault();
+  const handleDodajUslugu = (e) => {
+    e.preventDefault();
+    if (!novaUsluga.naziv || !novaUsluga.cena) return;
+    const nova = { id: Date.now(), naziv: novaUsluga.naziv, cena: novaUsluga.cena };
+    setSalonData({ ...salonData, usluge: [...salonData.usluge, nova] });
+    setNovaUsluga({ naziv: '', cena: '' });
+  };
 
-  if (!novaUsluga.naziv || !novaUsluga.cena) return;
-
-  try {
-    const token = localStorage.getItem("token");
-
-    const res = await api.post(
-      `/api/saloni/${salonData._id}/usluge`,
-      {
-        naziv: novaUsluga.naziv,
-        cena: novaUsluga.cena
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
-
-    // backend vraća update-ovan salon
-    setSalonData(res.data);
-
-    setNovaUsluga({ naziv: "", cena: "" });
-
-  } catch (err) {
-    console.error(err);
-    alert("Greška pri dodavanju usluge");
-  }
-};
   const handleObrisiUslugu = (id) => {
     if (window.confirm("Obriši ovu uslugu?")) {
-      setSalonData({ ...salonData, usluge: salonData.services.filter(u => u.id !== id) });
+      setSalonData({ ...salonData, usluge: salonData.usluge.filter(u => u.id !== id) });
     }
   };
   const handleDeleteSalon = async () => {
@@ -218,7 +195,7 @@ function Profil() {
             <input 
               type="text" 
               name="imeSalona" 
-              value={salonData.name} 
+              value={salonData.imeSalona} 
               onChange={handleSalonChange}
               className="text-4xl font-extrabold text-gray-950 bg-transparent border-b-2 border-dashed border-gray-200 focus:border-pink-500 focus:outline-none w-full pb-1"
             />
@@ -232,7 +209,7 @@ function Profil() {
               <input 
                 type="text" 
                 name="lokacija" 
-                value={salonData.address} 
+                value={salonData.lokacija} 
                 onChange={handleSalonChange}
                 className="text-base font-bold text-pink-600 bg-transparent border-b border-dashed border-gray-200 focus:border-pink-500 focus:outline-none w-full"
               />
@@ -256,7 +233,7 @@ function Profil() {
             <label className="text-xs font-bold text-gray-400 block uppercase ml-1 mb-1">Opis salona</label>
             <textarea 
               name="opisSalona"
-              value={salonData.description} 
+              value={salonData.opisSalona} 
               onChange={handleSalonChange}
               rows="2"
               className="w-full bg-white p-3 rounded-xl border border-gray-100 shadow-sm text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
@@ -270,7 +247,7 @@ function Profil() {
               <h2 className="text-2xl font-black mb-6 text-gray-900">Usluge i cenovnik</h2>
               
               <div className="space-y-4 mb-6">
-                {salonData.services.map((usluga) => (
+                {salonData.usluge.map((usluga) => (
                   <div key={usluga.id} className="flex justify-between items-center border-b border-gray-50 pb-3">
                     <input 
                       type="text"
@@ -391,11 +368,11 @@ function Profil() {
               </div>
               <div className="space-y-1.5 text-sm text-gray-600 mb-6">
                 <p>
-                  <strong>Naziv:</strong> {salonData?.name || 'Nije uneto'}
+                  <strong>Naziv:</strong> {salonData?.imeSalona || 'Nije uneto'}
                 </p>
 
                 <p>
-                  <strong>Lokacija:</strong> {salonData?.address || 'Nije uneto'}
+                  <strong>Lokacija:</strong> {salonData?.lokacija || 'Nije uneto'}
                 </p>
               </div>
             </div>

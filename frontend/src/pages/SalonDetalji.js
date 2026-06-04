@@ -44,8 +44,9 @@ function SalonDetalji() {
       <Link to="/" className="text-pink-500 font-semibold hover:underline mb-6 inline-block">← Nazad na početnu</Link>
       
       {/* Koristimo salon.slika ili placeholder ako ne postoji */}
-      <img src={salon.slika || 'https://via.placeholder.com/800'} alt={salon.name} className="w-full h-80 object-cover rounded-2xl shadow-md mb-8" />
+      {/* <img src={salon.slika || 'https://via.placeholder.com/800'} alt={salon.name} className="w-full h-80 object-cover rounded-2xl shadow-md mb-8" /> */}
       
+
       <div className="flex justify-between items-center mb-2">
         <h1 className="text-4xl font-black text-gray-900">{salon.name}</h1>
       </div>
