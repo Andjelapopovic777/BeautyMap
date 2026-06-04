@@ -120,3 +120,62 @@ exports.updateWorkingHours = async (req, res) => {
     });
   }
 };
+
+exports.updateServices = async (req, res) => {
+  try {
+
+    const salon = await Salon.findOne({
+      owner: req.user._id
+    });
+
+    if (!salon) {
+      return res.status(404).json({
+        success: false,
+        message: 'Salon nije pronađen'
+      });
+    }
+
+    salon.services = req.body.services;
+
+    await salon.save();
+
+    res.status(200).json({
+      success: true,
+      data: salon.services,
+      message: 'Usluge uspešno ažurirane'
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+};
+
+exports.updateBasicInfo = async (req, res) => {
+  try {
+    const { imeSalona, lokacija, telefon, opisSalona } = req.body;
+
+    const salon = await Salon.findOneAndUpdate(
+      { owner: req.user._id },
+      { 
+        name: imeSalona, 
+        address: lokacija, 
+        phone: telefon,
+        description: opisSalona
+      },
+      { new: true }
+    );
+
+    if (!salon) {
+      return res.status(404).json({ success: false, message: 'Salon nije pronađen' });
+    }
+
+    res.status(200).json({ success: true, data: salon });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
