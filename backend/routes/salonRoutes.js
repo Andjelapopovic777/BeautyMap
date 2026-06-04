@@ -7,13 +7,15 @@ const {
   reviewSalon, 
   getMySalon,
   deleteSalon,
-  getSalonById
+  getSalonById,
+  updateWorkingHours
 } = require('../controllers/salonController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 // OVE DVE LINIJE MORAJU BITI TU:
 router.get('/pending', protect, authorize('admin'), getPendingSalons);
 router.get('/approved', protect, authorize('admin'), getApprovedSalons);
+router.put( '/moj-salon/working-hours', protect, authorize('owner'), updateWorkingHours);
 
 router.get('/', getApprovedSalons);
 router.get('/:id', getSalonById);

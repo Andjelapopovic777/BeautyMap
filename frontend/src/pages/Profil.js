@@ -37,7 +37,12 @@ function Profil() {
       // Ako salon postoji, postavi podatke i status
       setSalonData({
         ...res.data,
-        usluge: res.data.usluge || []
+        usluge: res.data.usluge || [],
+        workingHours: res.data.workingHours || {
+          monFri: '',
+          sat: '',
+          sun: ''
+        }
       });
       setStatusSalona(res.data.status === 'pending' ? 'na_cekanju' : 'odobren');
     })
@@ -77,6 +82,33 @@ function Profil() {
     alert("Došlo je do greške!");
   }
 };
+
+  const saveWorkingHours = async () => {
+    try {
+
+      const token = localStorage.getItem('token');
+
+      await api.put(
+        '/api/saloni/moj-salon/working-hours',
+        {
+          monFri: salonData.workingHours.monFri,
+          sat: salonData.workingHours.sat,
+          sun: salonData.workingHours.sun
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      alert('Radno vreme uspešno sačuvano!');
+
+    } catch (err) {
+      console.error(err);
+      alert('Greška prilikom čuvanja.');
+    }
+  };
 
   const handleSalonChange = (e) => {
     setSalonData({ ...salonData, [e.target.name]: e.target.value });
@@ -183,7 +215,7 @@ function Profil() {
       <div className="max-w-5xl mx-auto px-4 py-8 bg-[#f9fafb] min-h-screen">
         <div className="flex justify-between items-center mb-8 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
           <button onClick={() => setIsEditing(false)} className="text-gray-600 hover:text-pink-500 font-bold transition">← Nazad na profil</button>
-          <button onClick={() => { setIsEditing(false); alert("Sve izmene na salonu, opisu i cenovniku su sačuvane!"); }} className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-xl transition shadow-md">
+          <button onClick={async() => {  await saveWorkingHours(); setIsEditing(false); alert("Sve izmene na salonu, opisu i cenovniku su sačuvane!"); }} className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-xl transition shadow-md">
             Sačuvaj izmene
           </button>
         </div>
@@ -217,15 +249,80 @@ function Profil() {
           </div>
 
           {/* Radno vreme box */}
-          <div className="bg-pink-50/60 border border-pink-100 p-4 rounded-xl">
-            <label className="block text-xs font-bold text-pink-700 uppercase mb-1">Radno vreme:</label>
-            <input 
-              type="text" 
-              name="radnoVreme" 
-              value={salonData.radnoVreme} 
-              onChange={handleSalonChange}
-              className="w-full bg-transparent text-sm text-gray-800 font-medium focus:outline-none focus:border-b border-pink-300"
-            />
+          <div className="bg-pink-50 border border-pink-100 p-5 rounded-2xl">
+            <h3 className="font-bold text-pink-700 mb-4">
+              Radno vreme
+            </h3>
+
+            <div className="space-y-4">
+
+              <div>
+                <label className="block text-sm font-semibold mb-1">
+                  Ponedeljak - Petak
+                </label>
+
+                <input
+                  type="text"
+                  value={salonData.workingHours?.monFri || ''}
+                  onChange={(e) =>
+                    setSalonData({
+                      ...salonData,
+                      workingHours: {
+                        ...salonData.workingHours,
+                        monFri: e.target.value
+                      }
+                    })
+                  }
+                  placeholder="09:00 - 20:00"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-1">
+                  Subota
+                </label>
+
+                <input
+                  type="text"
+                  value={salonData.workingHours?.sat || ''}
+                  onChange={(e) =>
+                    setSalonData({
+                      ...salonData,
+                      workingHours: {
+                        ...salonData.workingHours,
+                        sat: e.target.value
+                      }
+                    })
+                  }
+                  placeholder="09:00 - 17:00"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-1">
+                  Nedelja
+                </label>
+
+                <input
+                  type="text"
+                  value={salonData.workingHours?.sun || ''}
+                  onChange={(e) =>
+                    setSalonData({
+                      ...salonData,
+                      workingHours: {
+                        ...salonData.workingHours,
+                        sun: e.target.value
+                      }
+                    })
+                  }
+                  placeholder="10:00 - 15:00"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2"
+                />
+              </div>
+
+            </div>
           </div>
 
           {/* OPIS SALONA (Sada je input/textarea polje koje gazda menja!) */}
@@ -384,12 +481,7 @@ function Profil() {
               >
                 Izmeni podatke (Update)
               </button>
-              <button
-                onClick={handleDeleteSalon}
-                className="px-3 bg-red-50 text-red-600 font-bold rounded-xl hover:bg-red-100 transition text-sm border border-red-100"
-              >
-                Obriši salon
-              </button>
+             
             </div>
           </div>
         )}

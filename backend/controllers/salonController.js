@@ -83,3 +83,40 @@ exports.getSalonById = async (req, res) => {
     res.status(500).json({ success: false, message: 'Greška na serveru', error: error.message });
   }
 };
+
+exports.updateWorkingHours = async (req, res) => {
+  try {
+    const { monFri, sat, sun } = req.body;
+
+    const salon = await Salon.findOne({
+      owner: req.user._id
+    });
+
+    if (!salon) {
+      return res.status(404).json({
+        success: false,
+        message: 'Salon nije pronađen'
+      });
+    }
+
+    salon.workingHours = {
+      monFri,
+      sat,
+      sun
+    };
+
+    await salon.save();
+
+    res.status(200).json({
+      success: true,
+      data: salon,
+      message: 'Radno vreme uspešno ažurirano'
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

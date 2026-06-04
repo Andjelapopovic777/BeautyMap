@@ -52,6 +52,34 @@ function SalonDetalji() {
       </div>
       
       <p className="text-pink-600 font-medium mb-4">📍 {salon.address}</p>
+
+      <p className="text-gray-700 mb-4">
+        📞 <span className="font-medium">{salon.phone}</span>
+      </p>
+
+              {/* RADNO VREME */}
+        <div className="bg-gray-50 p-5 rounded-2xl border border-gray-100 mb-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-3">
+            Radno vreme
+          </h2>
+
+          <div className="space-y-2 text-gray-700">
+            <p>
+              <span className="font-semibold">Ponedeljak - Petak:</span>{' '}
+              {salon.workingHours?.monFri || 'Nije dostupno'}
+            </p>
+
+            <p>
+              <span className="font-semibold">Subota:</span>{' '}
+              {salon.workingHours?.sat || 'Nije dostupno'}
+            </p>
+
+            <p>
+              <span className="font-semibold">Nedelja:</span>{' '}
+              {salon.workingHours?.sun || 'Nije dostupno'}
+            </p>
+          </div>
+        </div>
       
       <p className="text-gray-700 text-lg leading-relaxed mb-8">{salon.description}</p>
       
