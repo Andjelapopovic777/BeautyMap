@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../api';
 
 function Profil() {
+  const [recenzijePregled, setRecenzijePregled] = useState([]);
   const [prikaziFormu, setPrikaziFormu] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [statusSalona, setStatusSalona] = useState('ucitavanje');
@@ -18,6 +19,13 @@ function Profil() {
   });
 
   const [novaUsluga, setNovaUsluga] = useState({ naziv: '', cena: '' });
+
+  useEffect(() => {
+  if (!salonData._id) return;
+  api.get(`/api/recenzije/salon/${salonData._id}`)
+    .then(res => setRecenzijePregled(res.data.data || []))
+    .catch(err => console.error('Greška pri učitavanju recenzija:', err));
+  }, [salonData._id]);
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -308,13 +316,34 @@ function Profil() {
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 h-fit opacity-75">
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 h-fit">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold text-gray-900">Recenzije korisnika</h2>
-                <span className="bg-amber-100 text-amber-700 font-bold px-2 py-0.5 rounded-full text-xs">⭐ 4.7</span>
+                {recenzijePregled.length > 0 && (
+                  <span className="bg-amber-100 text-amber-700 font-bold px-2 py-0.5 rounded-full text-xs">
+                    ⭐ {(recenzijePregled.reduce((sum, r) => sum + r.ocena, 0) / recenzijePregled.length).toFixed(1)}
+                  </span>
+                )}
               </div>
-              <p className="text-sm text-gray-400 italic mb-4">Ovaj salon još uvek nema recenzija. Budite prvi!</p>
-              <div className="p-3 bg-gray-50 rounded-xl text-center text-xs text-gray-500 border border-gray-200">
+
+              {recenzijePregled.length === 0 ? (
+                <p className="text-sm text-gray-400 italic">Ovaj salon još uvek nema recenzija.</p>
+              ) : (
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {recenzijePregled.map(r => (
+                    <div key={r._id} className="border-b border-gray-50 pb-3">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-semibold text-sm text-gray-800">{r.korisnik?.name || 'Korisnik'}</span>
+                        <span className="text-amber-400 text-sm">{'★'.repeat(r.ocena)}{'☆'.repeat(5 - r.ocena)}</span>
+                      </div>
+                      <p className="text-sm text-gray-600">{r.tekst}</p>
+                      <p className="text-xs text-gray-400 mt-1">{new Date(r.createdAt).toLocaleDateString('sr-RS')}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="p-3 bg-gray-50 rounded-xl text-center text-xs text-gray-500 border border-gray-200 mt-4">
                 🔒 Recenzije i ocene su zaključane. Vlasnik ne može da ih menja radi zaštite objektivnosti.
               </div>
             </div>
@@ -369,24 +398,21 @@ function Profil() {
             <div>
               <div className="flex justify-between items-start mb-4">
                 <h2 className="text-xl font-bold text-gray-800">Moj Salon</h2>
-                <span className="bg-blue-100 text-blue-700 font-bold px-2.5 py-0.5 rounded-full text-xs uppercase">Aktivan</span>
+                <span className="bg-green-100 text-green-700 font-bold px-2.5 py-0.5 rounded-full text-xs uppercase">Aktivan</span>
               </div>
               <div className="space-y-1.5 text-sm text-gray-600 mb-6">
                 <p><strong>Naziv:</strong> {salonData.imeSalona}</p>
                 <p><strong>Lokacija:</strong> {salonData.lokacija}</p>
                 <p><strong>Telefon:</strong> {salonData.telefon}</p>
-                <p><strong>Pon-Pet:</strong> {salonData.workingHours?.monFri || 'Nije uneto'}</p>
-                <p><strong>Subota:</strong> {salonData.workingHours?.sat || 'Nije uneto'}</p>
-                <p><strong>Nedelja:</strong> {salonData.workingHours?.sun || 'Nije uneto'}</p>
               </div>
             </div>
             <div className="flex gap-2">
               <button onClick={() => setIsEditing(true)}
-                className="flex-1 bg-gray-900 text-white font-bold py-2.5 rounded-xl hover:bg-gray-800 transition text-sm shadow-md">
+                className="flex-1 bg-pink-500 text-white font-bold py-2.5 rounded-xl hover:bg-gray-500 transition text-sm shadow-md">
                 Izmeni podatke
               </button>
               <button onClick={handleDeleteSalon}
-                className="bg-red-500 text-white font-bold py-2.5 px-4 rounded-xl hover:bg-red-600 transition text-sm shadow-md">
+                className="bg-gray-500 text-white font-bold py-2.5 px-4 rounded-xl hover:bg-pink-500 transition text-sm shadow-md">
                 Obriši
               </button>
             </div>

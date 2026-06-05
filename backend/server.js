@@ -10,7 +10,10 @@ app.use(express.json());
 
 const salonRoutes = require('./routes/salonRoutes'); 
 console.log("Salon rute su učitane!");
-
+//DODALA:
+const recenzijaRoutes = require('./routes/recenzijaRoutes');
+app.use('/api/recenzije', recenzijaRoutes);
+//
 connectDB();
 
 app.use('/api/auth', require('./routes/authRoutes'));

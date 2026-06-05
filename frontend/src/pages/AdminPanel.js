@@ -5,7 +5,7 @@ function AdminPanel() {
   const [aktivniTab, setAktivniTab] = useState('zahtevi');
   const [zahtevi, setZahtevi] = useState([]);
   const [aktivniSaloni, setAktivniSaloni] = useState([]);
-  const [recenzije, setRecenzije] = useState([]); // 1. Dodato stanje za recenzije
+  const [recenzije, setRecenzije] = useState([]); 
 
   useEffect(() => {
     fetchData();
@@ -70,18 +70,21 @@ const handlePrihvatiSalon = async (id, imeSalona) => {
     }
   };
 
-  // 3. Dodata funkcija za brisanje recenzije
-  const handleObrisiRecenziju = async (id) => {
-    if (window.confirm("Da li sigurno želite da obrišete ovu recenziju?")) {
-      try {
-        await axios.delete(`http://localhost:5000/api/recenzije/${id}`);
-        fetchData(); // Osveži listu nakon brisanja
-      } catch (err) {
-        alert("Greška pri brisanju recenzije.");
-      }
+  
+ const handleObrisiRecenziju = async (id) => {
+  if (window.confirm("Da li sigurno želite da obrišete ovu recenziju?")) {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:5000/api/recenzije/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchData();
+    } catch (err) {
+      alert("Greška pri brisanju recenzije.");
     }
-  };
-
+  }
+};
+//
   const handleObrisiSalon = async (id, imeSalona) => {
 
   const potvrda = window.confirm(
@@ -209,26 +212,37 @@ const handlePrihvatiSalon = async (id, imeSalona) => {
         </div>
       )}
 
-      {/* 4. NOVI TAB ZA RECENZIJE */}
-      {aktivniTab === 'recenzije' && (
-        <div className="bg-white p-6 rounded-2xl">
-          <h2 className="text-xl font-bold mb-4">Moderacija recenzija</h2>
-          {recenzije.map(r => (
-            <div key={r._id} className="flex justify-between border-b p-4 items-center">
-              <div>
-                <p className="font-bold">{r.korisnik} o {r.salon}</p>
-                <p className="text-sm text-gray-600">"{r.tekst}"</p>
-              </div>
-              <button 
-                onClick={() => handleObrisiRecenziju(r._id)} 
-                className="bg-red-500 text-white px-3 py-1 rounded-lg text-sm"
-              >
-                Obriši
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+      
+            
+        {aktivniTab === 'recenzije' && (
+          <div className="bg-white p-6 rounded-2xl">
+            <h2 className="text-2xl font-bold mb-4">Moderacija recenzija</h2>
+            {recenzije.length === 0 ? (
+              <p className="text-gray-400 text-center py-8">Nema recenzija.</p>
+            ) : (
+              recenzije.map(r => (
+                <div key={r._id} className="flex justify-between border-b p-4 items-center">
+                  <div>
+                    <p className="font-bold">
+                      {r.korisnik?.name || 'Korisnik'} o {r.salon?.name || 'salon'}
+                      <span className="text-amber-400 ml-2">{'★'.repeat(r.ocena)}</span>
+                    </p>
+                    <p className="text-sm text-gray-600">{r.tekst}</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      {new Date(r.createdAt).toLocaleDateString('sr-RS')}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleObrisiRecenziju(r._id)}
+                    className="bg-red-500 text-white px-3 py-1 rounded-lg text-sm"
+                  >
+                    Obriši
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        )}
     </div>
   );
 }

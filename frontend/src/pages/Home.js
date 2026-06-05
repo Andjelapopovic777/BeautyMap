@@ -7,7 +7,10 @@ function Home() {
   const [saloni, setSaloni] = useState([]);
   const [pretraga, setPretraga] = useState('');
   const [loading, setLoading] = useState(true);
+  
 
+  
+  
   useEffect(() => {
     axios
       .get('http://localhost:5000/api/saloni')
@@ -38,11 +41,11 @@ function Home() {
         />
 
         <h1 className="text-4xl md:text-6xl font-black text-gray-900 mb-3">
-          Pronađi svoj idealan salon
+          NAJBOLJI FRIZERSKI SALONI U NOVOM SADU
         </h1>
 
-        <p className="text-gray-500 text-lg max-w-2xl">
-          Najbolji frizerski, kozmetički i beauty saloni na jednom mestu.
+        <p className="text-pink-500 text-lg max-w-2xl">
+          Sve na jednom mesto. Vaš BeautyMap.
         </p>
       </div>
 
